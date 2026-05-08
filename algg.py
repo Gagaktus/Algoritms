@@ -1,20 +1,22 @@
-import random
+import time
 
-def best_case(n):
-    return list(range(n))
-
-def worst_case(n):
-    return list(range(n, 0, -1))
-
-def average_case(n):
-    a = list(range(n))
-    random.shuffle(a)
-    return a
+def measure(sort_func, data, tries=3):
+    best = float('inf')
+    for _ in range(tries):
+        copy_data = data.copy()
+        start = time.perf_counter()
+        sort_func(copy_data)
+        end = time.perf_counter()
+        t = end - start
+        if t < best:
+            best = t
+    return best
 
 
 if __name__ == "__main__":
-    n = 10
-    print(f"n = {n}")
-    print("Лучший случай:", best_case(n))
-    print("Худший случай:", worst_case(n))
-    print("Средний случай:", average_case(n))
+    def dummy_sort(arr):
+        arr.sort()
+    
+    test_arr = [3, 1, 4, 1, 5, 9, 2]
+    t = measure(dummy_sort, test_arr)
+    print(f"Лучшее время из 3 попыток: {t:.6f} сек")
