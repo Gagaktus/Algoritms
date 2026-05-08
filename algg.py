@@ -1,13 +1,20 @@
-import time
+import random
 
-def measure_time(sort_func, arr, trials=3):
-    best_time = float('inf')
-    for _ in range(trials):
-        test_arr = arr.copy()
-        start = time.perf_counter()
-        sort_func(test_arr)
-        end = time.perf_counter()
-        elapsed = end - start
-        if elapsed < best_time:
-            best_time = elapsed
-    return best_time
+def best_case(n):
+    return list(range(n))
+
+def worst_case(n):
+    return list(range(n, 0, -1))
+
+def average_case(n):
+    a = list(range(n))
+    random.shuffle(a)
+    return a
+
+
+if __name__ == "__main__":
+    n = 10
+    print(f"n = {n}")
+    print("Лучший случай:", best_case(n))
+    print("Худший случай:", worst_case(n))
+    print("Средний случай:", average_case(n))
