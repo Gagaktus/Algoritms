@@ -1,4 +1,3 @@
-# Стек на списке
 class Stack:
     def __init__(self):
         self._data = []
@@ -22,8 +21,6 @@ class Stack:
     def size(self):
         return len(self._data)
 
-
-# Очередь на списке
 class Queue:
     def __init__(self):
         self._data = []
