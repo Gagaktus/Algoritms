@@ -11,7 +11,7 @@ class LinkedList:
     
     def insert(self, data):
         node = Node(data)
-        if self.head is None:          # список пуст
+        if self.head is None:
             self.head = node
             self.tail = node
         else:
@@ -35,7 +35,7 @@ class LinkedList:
         
         val = self.head.data
         
-        if self.head == self.tail:    # был единственный элемент
+        if self.head == self.tail:
             self.head = None
             self.tail = None
         else:
@@ -50,7 +50,7 @@ class LinkedList:
         
         val = self.tail.data
         
-        if self.head == self.tail:    # один элемент
+        if self.head == self.tail:
             self.head = None
             self.tail = None
         else:
