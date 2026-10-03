@@ -355,3 +355,4 @@ print("Этап 6")
 heap_sort(heap_data)
 print("Отсортированный массив:")
 print_requests(heap_data)
+#MelnikTR24
