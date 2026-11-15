@@ -1,68 +1,60 @@
-class DSU:
-    def __init__(self, vertices):
-        self.parent = {v: v for v in vertices}
-        self.rank = {v: 0 for v in vertices}
-
-    def find(self, x):
-        if self.parent[x] != x:
-            self.parent[x] = self.find(self.parent[x])
-        return self.parent[x]
-
-    def union(self, x, y):
-        rx = self.find(x)
-        ry = self.find(y)
-
-        if rx == ry:
-            return False
-
-        if self.rank[rx] < self.rank[ry]:
-            self.parent[rx] = ry
-        elif self.rank[rx] > self.rank[ry]:
-            self.parent[ry] = rx
-        else:
-            self.parent[ry] = rx
-            self.rank[rx] += 1
-
-        return True
+import heapq
 
 
-def minimum_spanning_tree(graph):
-    vertices = set()
-    for u, v, w in graph:
-        vertices.add(u)
-        vertices.add(v)
+def prim(graph, start):
+    if not graph:
+        return [], 0, False
+    if start not in graph:
+        raise ValueError(f"Стартовая вершина {start!r} отсутствует в графе")
 
-    dsu = DSU(vertices)
-
+    visited = set()
     mst_edges = []
     total_weight = 0
 
-    for u, v, w in sorted(graph, key=lambda edge: edge[2]):
-        if dsu.union(u, v):
-            mst_edges.append((u, v, w))
-            total_weight += w
+    pq = [(0, None, start)]
 
-    return mst_edges, total_weight
+    while pq:
+        weight, u, v = heapq.heappop(pq)
+
+        if v in visited:
+            continue
+
+        visited.add(v)
+
+        if u is not None:
+            mst_edges.append((u, v, weight))
+            total_weight += weight
+
+        for neighbor, w in graph.get(v, []):
+            if neighbor not in visited:
+                heapq.heappush(pq, (w, v, neighbor))
+
+    connected = len(visited) == len(graph)
+    return mst_edges, total_weight, connected
 
 
-graph = [
-    ("A", "B", 4),
-    ("A", "C", 2),
-    ("B", "C", 1),
-    ("B", "D", 5),
-    ("C", "D", 8),
-    ("C", "E", 10),
-    ("D", "E", 2),
-    ("B", "E", 6),
-]
+if __name__ == "__main__":
+    graph = {
+        'A': [('B', 6), ('C', 2)],
+        'B': [('A', 6), ('C', 1), ('D', 5)],
+        'C': [('A', 2), ('B', 1), ('D', 10)],
+        'D': [('C', 10), ('B', 5), ('E', 2)],
+        'E': [('D', 2)],
+    }
 
-mst, total_weight = minimum_spanning_tree(graph)
+    edges, weight, connected = prim(graph, 'A')
 
-print("Выбранные рёбра:")
-for u, v, w in mst:
-    print(f"{u}{v}={w}")
+    for u, v, w in edges:
+        print(f"{u}{v} = {w}")
+    print("Вес:", weight)
+    print("Рёбер:", len(edges))
+    print("Связный:", connected)
 
-print(f"\nОбщий вес дерева: {total_weight}")
-print(f"Число рёбер: {len(mst)}")
-print("Способ предотвращения циклов: DSU / Union-Find — ребро пропускается, "
-      "если его вершины уже находятся в одной компоненте связности.")
+    disconnected = {
+        'A': [('B', 1)],
+        'B': [('A', 1)],
+        'C': [('D', 1)],
+        'D': [('C', 1)],
+    }
+    edges2, weight2, connected2 = prim(disconnected, 'A')
+    print("Рёбер:", len(edges2), "Вес:", weight2, "Связный:", connected2)
