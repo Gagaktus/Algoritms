@@ -1,36 +1,49 @@
-from collections import deque
+import heapq
+
+
+def topological_sort(graph):
+    indegree = {v: 0 for v in graph}
+
+    for u, neighbors in graph.items():
+        for v in neighbors:
+            if v not in indegree:
+                indegree[v] = 0
+            indegree[v] += 1
+
+    zero_indegree = [v for v, deg in indegree.items() if deg == 0]
+    heapq.heapify(zero_indegree)
+
+    order = []
+
+    while zero_indegree:
+        u = heapq.heappop(zero_indegree)
+        order.append(u)
+
+        for v in graph.get(u, []):
+            indegree[v] -= 1
+            if indegree[v] == 0:
+                heapq.heappush(zero_indegree, v)
+
+    if len(order) != len(indegree):
+        raise ValueError("Граф содержит цикл: топологическая сортировка невозможна")
+
+    return order
+
 
 graph = {
-    'A': ['B'],
-    'B': ['A', 'C', 'D'],
-    'C': ['B', 'E'],
-    'D': ['B'],
-    'E': ['C'],
+    "A": ["C"],
+    "B": ["C", "D"],
+    "C": ["E"],
+    "D": ["E"],
+    "E": ["F"],
+    "F": [],
 }
 
-def bfs(graph, start):
-    visited = {start}
-    queue = deque([start])
-    order = []
-    while queue:
-        vertex = queue.popleft()
-        order.append(vertex)
-        for neighbor in graph[vertex]:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                queue.append(neighbor)
-    return order
+print(topological_sort(graph))
 
-def dfs(graph, start, visited=None, order=None):
-    if visited is None:
-        visited, order = set(), []
-    visited.add(start)
-    order.append(start)
-    for neighbor in graph[start]:
-        if neighbor not in visited:
-            dfs(graph, neighbor, visited, order)
-    return order
+graph["F"].append("B")
 
-if __name__ == "__main__":
-    print("BFS:", " → ".join(bfs(graph, 'A')))
-    print("DFS:", " → ".join(dfs(graph, 'A')))
+try:
+    print(topological_sort(graph))
+except ValueError as e:
+    print(e)
